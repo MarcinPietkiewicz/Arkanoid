@@ -14,6 +14,11 @@ window.onload = function() {
 };
 
 function updateAll() {
+  moveAll();
+  drawAll();
+}
+
+function moveAll() {
   ballX += ballSpeedX;
   ballY += ballSpeedY;
 
@@ -29,10 +34,22 @@ function updateAll() {
   if (ballY < 0) {
     ballSpeedY *= -1;
   }
-  canvasContext.fillStyle = "black";
-  canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-  canvasContext.fillStyle = "red";
+}
+
+function drawAll() {
+  colorRect(0, 0, canvas.width, canvas.height, "black"); //clear screen
+
+  colorCircle(ballX, ballY, 10, "white"); //draw a ball
+}
+
+function colorRect(topLeftX, topLeftY, boxWidth, boxHeight, fillColor) {
+  canvasContext.fillStyle = fillColor;
+  canvasContext.fillRect(topLeftX, topLeftY, boxWidth, boxHeight);
+}
+
+function colorCircle(centerX, centerY, radius, fillColor) {
+  canvasContext.fillStyle = fillColor;
   canvasContext.beginPath();
-  canvasContext.arc(ballX, ballY, 10, 0, Math.PI * 2, true);
+  canvasContext.arc(centerX, centerY, radius, 0, Math.PI * 2, true);
   canvasContext.fill();
 }
