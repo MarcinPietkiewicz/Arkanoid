@@ -4,10 +4,10 @@ var ballSpeedX = 5;
 var ballSpeedY = 8;
 
 const BRICK_W = 80;
-const BRICK_H = 20;
+const BRICK_H = 40;
 const BRICK_GAP = 5;
 const BRICK_COLS = 10;
-const BRICK_ROWS = 14;
+const BRICK_ROWS = 7;
 var brickGrid = new Array(BRICK_COLS * BRICK_ROWS);
 
 
@@ -65,7 +65,7 @@ function ballReset() {
   ballY = canvas.height / 2;
 }
 
-function moveAll() {
+function ballMove() {
   ballX += ballSpeedX;
   ballY += ballSpeedY;
 
@@ -81,8 +81,9 @@ function moveAll() {
   if (ballY < 0) { // top
     ballSpeedY *= -1;
   }
+}
 
-
+function ballBrickHandling() {
 
   var ballBrickCol = Math.floor(ballX / BRICK_W);
   var ballBrickRow = Math.floor(ballY / BRICK_H);
@@ -97,12 +98,25 @@ function moveAll() {
     if (brickGrid[brickIndexUnderBall]) {
 
       brickGrid[brickIndexUnderBall] = false;
-      ballSpeedY *= -1;
+
+      var prevBallX = ballX - ballSpeedX;
+      var prevBallY = ballY - ballSpeedY;
+      var prevBrickCol = Math.floor(prevBallX / BRICK_W);
+      var prevBrickRow = Math.floor(prevBallY / BRICK_H);
+
+      if (prevBrickCol != ballBrickCol) {
+        ballSpeedX *= -1;
+      }
+      if (prevBrickRow != ballBrickRow) {
+        ballSpeedY *= -1;
+      }
+
+      // ballSpeedY *= -1;
     }
   }
+}
 
-
-
+function ballPaddleHandling() {
   var paddleTopEdgeY = canvas.height - PADDLE_DIST_FROM_EDGE;
   var paddleBottomEdgeY = paddleTopEdgeY + PADDLE_THICKNESS;
   var paddleLeftEdgeX = paddleX;
@@ -118,6 +132,14 @@ function moveAll() {
     var ballDistFromPaddleCenterX = ballX - centerOfPaddleX;
     ballSpeedX = ballDistFromPaddleCenterX * 0.35;
   }
+}
+
+function moveAll() {
+  ballMove();
+  ballBrickHandling();
+  ballPaddleHandling();
+
+
 }
 
 function rowColToArrayIndex(col, row) {
