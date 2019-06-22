@@ -3,12 +3,12 @@ var ballY = 75;
 var ballSpeedX = 5;
 var ballSpeedY = 8;
 
-const BRICK_W = 100;
-const BRICK_H = 50;
+const BRICK_W = 80;
+const BRICK_H = 20;
 const BRICK_GAP = 5;
-const BRICK_COLS = 8;
-const BRICK_ROWS = 4;
-var brickGrid = new Array(BRICK_COLS);
+const BRICK_COLS = 10;
+const BRICK_ROWS = 14;
+var brickGrid = new Array(BRICK_COLS * BRICK_ROWS);
 
 
 const PADDLE_WIDTH = 100;
@@ -33,8 +33,8 @@ function updateMousePos(event) {
 }
 
 function brickReset() {
-  for (let i = 0; i < BRICK_COLS; i++) {
-    if (Math.random() < 1) {
+  for (let i = 0; i < BRICK_COLS * BRICK_ROWS; i++) {
+    if (Math.random() <= 1) {
       brickGrid[i] = true;
     } else {
       brickGrid[i] = false;
@@ -95,15 +95,21 @@ function moveAll() {
     var centerOfPaddleX = paddleX + PADDLE_WIDTH / 2
     var ballDistFromPaddleCenterX = ballX - centerOfPaddleX;
     ballSpeedX = ballDistFromPaddleCenterX * 0.35;
-
   }
-
 }
+
+function rowColToArrayIndex(col, row) {
+  return col + BRICK_COLS * row;
+}
+
 
 function drawBricks() {
   for (var eachRow = 0; eachRow < BRICK_ROWS; eachRow++) {
-    for (let eachCol = 0; eachCol < BRICK_COLS; eachCol++) {
-      if (brickGrid[eachCol]) {
+    for (var eachCol = 0; eachCol < BRICK_COLS; eachCol++) {
+
+      var arrayIndex = rowColToArrayIndex(eachCol, eachRow);
+
+      if (brickGrid[arrayIndex]) {
         colorRect(BRICK_W * eachCol, BRICK_H * eachRow, BRICK_W - BRICK_GAP, BRICK_H - BRICK_GAP, 'blue');
       }
     }
@@ -119,11 +125,16 @@ function drawAll() {
   colorRect(paddleX, canvas.height - PADDLE_DIST_FROM_EDGE, PADDLE_WIDTH, PADDLE_THICKNESS, "white");
   drawBricks();
 
-  var mouseBrickCol = mouseX / BRICK_W;
-  var mouseBrickRow = mouseY / BRICK_H;
+  var mouseBrickCol = Math.floor(mouseX / BRICK_W);
+  var mouseBrickRow = Math.floor(mouseY / BRICK_H);
+  var brickIndexUnderMouse = rowColToArrayIndex(mouseBrickCol, mouseBrickRow);
 
+  colorText(mouseBrickCol + "," + mouseBrickRow + ":" + brickIndexUnderMouse, mouseX, mouseY, 'yellow');
 
-  colorText(mouseBrickCol + "," + mouseBrickRow, mouseX, mouseY, 'yellow');
+  if (brickIndexUnderMouse >= 0 &&
+    brickIndexUnderMouse < BRICK_COLS * BRICK_ROWS) {
+    brickGrid[brickIndexUnderMouse] = false;
+  }
 }
 
 function colorRect(topLeftX, topLeftY, boxWidth, boxHeight, fillColor) {
